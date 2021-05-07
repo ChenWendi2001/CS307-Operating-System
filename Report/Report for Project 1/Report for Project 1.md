@@ -59,9 +59,9 @@ printk(KERN_INFO "/proc/%s created\n", PROC_NAME);
 rv = sprintf(buffer, "%lu\n",jiffies);
 ```
 
-##### 4. 项目中所需要的一些Shell命令
+##### 4. 项目中所需要的一些shell命令
 
-在本次项目中，代码的编写可以用任意编译器，但编译、加载等操作需要需要使用Shell完成。
+在本次项目中，代码的编写可以用任意编译器，但编译、加载等操作需要需要使用shell完成。
 
 |         命令         |                   功能                    |
 | :------------------: | :---------------------------------------: |
@@ -157,6 +157,36 @@ ssize_t proc_read(struct file *file, char __user *usr_buf, size_t count, loff_t 
 
 在本项目中，不仅需要修改``proc_read``函数，还需要修改``proc_init``函数来记录载入时的``jiffies``的值。这样通过利用我们在上文中导出的公式就可以得出模块加载后经过的时间。
 
+```c
+unsigned long int first_loaded;
+
+int proc_init(void)
+{
+        proc_create(PROC_NAME, 0, NULL, &my_proc_ops);
+        printk(KERN_INFO "/proc/%s created\n", PROC_NAME);
+        first_loaded = jiffies;
+		return 0;
+}
+
+ssize_t proc_read(struct file *file, char __user *usr_buf, size_t count, loff_t *pos)
+{
+        int rv = 0;
+        char buffer[BUFFER_SIZE];
+        static int completed = 0;
+
+        if (completed) {
+                completed = 0;
+                return 0;
+        }
+
+        completed = 1;
+        rv = sprintf(buffer, "%lu s\n",(jiffies-first_loaded)/HZ);
+        copy_to_user(usr_buf, buffer, rv);
+
+        return rv;
+}
+```
+
 以下是运行结果：
 
 ![image-20210507130721512](D:\PersonalFile\courses\CS307-Operating-System\Report\Report for Project 1\image-20210507130721512.png)
@@ -181,7 +211,7 @@ clean:
 
 在修改``.config``编译配置文件中``CONFIG_SYSTEM_TRUSTED_KEY``一行后修复。
 
-##### 2. make时报错
+##### 2. 用make编译模块时报错
 
 在首次编译时，编译器报告如下错误：向``proc_create``函数传递的参数错误。通过查阅相关资料发现，在5.12.1内核版本中，``proc_create``函数的第四个参数应该为``const struct proc_ops*``。因此我们需要传递对应的结构体参数，通过查阅内核源代码，我们获得了该结构体的具体结构。依照此结构构造结构体对象并正确传参后便可以正确编译了。
 
