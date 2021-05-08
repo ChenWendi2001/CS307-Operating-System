@@ -300,7 +300,7 @@ arameters* p = (parameters *) param;
 
 [1] Operating System Concept 10th Edition
 
-[2] [pthread_create函数详解](https://blog.csdn.net/mijichui2153/article/details/82855925)
+[2] [The Pthreads Library - Multithreaded Programming Guide (oracle.com)](https://docs.oracle.com/cd/E53394_01/html/E54803/tlib-1.html#OSMPGtlib-79569)
 
 [3] [RecursiveAction (Java Platform SE 8 ) (oracle.com)](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/RecursiveAction.html)
 

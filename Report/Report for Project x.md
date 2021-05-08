@@ -12,3 +12,7 @@
 
 #### IV. 遇到的问题
 
+#### V. 参考资料
+
+[1] Operating System Concept 10th Edition
+
