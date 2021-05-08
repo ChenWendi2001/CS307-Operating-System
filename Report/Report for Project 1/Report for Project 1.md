@@ -213,5 +213,32 @@ clean:
 
 ##### 2. 用make编译模块时报错
 
-在首次编译时，编译器报告如下错误：向``proc_create``函数传递的参数错误。通过查阅相关资料发现，在5.12.1内核版本中，``proc_create``函数的第四个参数应该为``const struct proc_ops*``。因此我们需要传递对应的结构体参数，通过查阅内核源代码，我们获得了该结构体的具体结构。依照此结构构造结构体对象并正确传参后便可以正确编译了。
+在首次编译时，编译器报告如下错误：向``proc_create``函数传递的参数错误。通过查阅相关资料发现，在5.12.1内核版本中，``proc_create``函数的第四个参数应该为``const struct proc_ops*``。因此我们需要传递对应的结构体参数，通过查阅内核源代码，我们获得了该结构体的具体结构。依照此结构构造结构体对象并正确传参后便可以通过编译了。
+
+```c
+struct proc_ops {
+	unsigned int proc_flags;
+	int	(*proc_open)(struct inode *, struct file *);
+	ssize_t	(*proc_read)(struct file *, char __user *, size_t, loff_t *);
+	ssize_t (*proc_read_iter)(struct kiocb *, struct iov_iter *);
+	ssize_t	(*proc_write)(struct file *, const char __user *, size_t, loff_t *);
+	loff_t	(*proc_lseek)(struct file *, loff_t, int);
+	int	(*proc_release)(struct inode *, struct file *);
+	__poll_t (*proc_poll)(struct file *, struct poll_table_struct *);
+	long	(*proc_ioctl)(struct file *, unsigned int, unsigned long);
+#ifdef CONFIG_COMPAT
+	long	(*proc_compat_ioctl)(struct file *, unsigned int, unsigned long);
+#endif
+	int	(*proc_mmap)(struct file *, struct vm_area_struct *);
+	unsigned long (*proc_get_unmapped_area)(struct file *, unsigned long, unsigned long, unsigned long, unsigned long);
+} __randomize_layout;
+```
+
+#### V. 参考资料
+
+[1] Operating System Concept 10th Edition
+
+[2] [The Linux Kernel Archives](https://www.kernel.org/)
+
+[3] [ubuntu20.04下载编译安装Linux5.8.2内核](https://blog.csdn.net/qq_37748570/article/details/108118284)
 
