@@ -238,7 +238,7 @@ void release(char *name)
             slow = slow->next;
         }
     }
-    printf("No progress found.\n");
+    printf("No process found.\n");
 }
 
 void compact(){
